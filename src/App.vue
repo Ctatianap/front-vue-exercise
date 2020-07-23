@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div class="w-full h-screen flex flex-col items-center">
+      <BannerWin :win="win"> </BannerWin>
       <div class="board border shadow-2xl grid grid-cols-3 w-3/4 lg:w-1/2">
         <Cell
           v-for="(value, key) in values"
@@ -31,7 +32,6 @@
           Play with <i class="fas fa-laptop"></i
         ></Button>
       </div>
-      <BannerWin :win="win"> </BannerWin>
     </div>
   </div>
 </template>
