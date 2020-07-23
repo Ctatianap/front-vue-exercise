@@ -13,10 +13,11 @@
           :play="() => play(key)"
         >
         </Cell>
+        <audio id="audioCat" className="clip" src="./assets/mew.mp3"></audio>
         <audio
-          id="audio"
+          id="audioFish"
           className="clip"
-          src="https://s3.amazonaws.com/freecodecamp/drums/Bld_H1.mp3"
+          src="./assets/bubble.mp3"
         ></audio>
       </div>
       <div>
@@ -76,8 +77,14 @@ export default {
         });
         this.values[key] = this.current;
         this.current = this.current === "X" ? "O" : "X";
-        const audio = document.getElementById("audio");
-        audio.play();
+
+        if (this.current === "O") {
+          const audio = document.getElementById("audioCat");
+          audio.play();
+        } else {
+          const audio = document.getElementById("audioFish");
+          audio.play();
+        }
         this.moves++;
       }
       this.calculateWinner();
@@ -169,7 +176,9 @@ export default {
         this.autoPlay();
       }
     },
-    playMachine() {},
+    playMachine() {
+      this.reset();
+    },
   },
 };
 </script>
