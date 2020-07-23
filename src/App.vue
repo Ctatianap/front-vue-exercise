@@ -1,10 +1,7 @@
 <template>
   <div id="app">
     <div class="w-full h-screen flex flex-col items-center">
-      <div
-        class="border shadow-2xl grid grid-cols-3 w-3/4 lg:w-1/2"
-        :style="{ 'background-color': 'rgb(255 251 248)' }"
-      >
+      <div class="board border shadow-2xl grid grid-cols-3 w-3/4 lg:w-1/2">
         <Cell
           v-for="(value, key) in values"
           v-bind:key="key"
@@ -67,9 +64,10 @@ export default {
     win: "",
     history: [],
     moves: 0,
+    isAgainstPC: false,
   }),
   methods: {
-    play(key) {
+    play(key, isMachine = false) {
       if (!this.win && !this.values[key]) {
         this.history.push({
           values: { ...this.values },
@@ -78,14 +76,17 @@ export default {
         this.values[key] = this.current;
         this.current = this.current === "X" ? "O" : "X";
 
-        if (this.current === "O") {
-          const audio = document.getElementById("audioCat");
-          audio.play();
-        } else {
-          const audio = document.getElementById("audioFish");
-          audio.play();
-        }
+        const audio = document.getElementById(
+          this.current === "O" ? "audioCat" : "audioFish"
+        );
+        audio.play();
         this.moves++;
+        // Allow machine to play
+        if (this.isAgainstPC && !isMachine) {
+          setTimeout(() => {
+            this.autoPlay();
+          }, 500);
+        }
       }
       this.calculateWinner();
     },
@@ -104,6 +105,7 @@ export default {
       this.current = "X";
       this.win = "";
       this.moves = 0;
+      this.isAgainstPC = false;
     },
     calculateWinner() {
       const horizontalWinner = () => {
@@ -155,10 +157,11 @@ export default {
       }
     },
     undo() {
-      if (this.win) {
-        return;
-      }
-      if (this.history.length) {
+      if (!this.win && this.history.length) {
+        if (this.isAgainstPC) {
+          this.history.pop();
+          this.moves--;
+        }
         const { current, values } = this.history.pop();
         this.values = values;
         this.current = current;
@@ -171,13 +174,14 @@ export default {
       }
       let randomNum = Math.floor(Math.random() * 9 + 1);
       if (this.values[randomNum] === "") {
-        this.play(randomNum);
+        this.play(randomNum, true);
       } else {
         this.autoPlay();
       }
     },
     playMachine() {
       this.reset();
+      this.isAgainstPC = true;
     },
   },
 };
@@ -191,5 +195,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.board {
+  background-color: rgb(255 251 248);
 }
 </style>
